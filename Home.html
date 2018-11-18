@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <div class="barra" style= "color: white"><h3>Bem-Vindo,</h3>
+  </div>
+  <title>Temperature Data from Arduino</title>
+  <link type="text/css" rel="stylesheet" href="//pubnub.github.io/eon/v/eon/0.0.9/eon.css" />
+  <style type="text/css">
+
+  * { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+  body {
+      font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', 'Roboto Light', 'Segoe UI Web Light', 'Segoe UI Light', 'Segoe UI Web Regular', 'Segoe UI', Helvetica, Arial, sans-serif;
+      margin: 1em;
+      background-color: #363b41;
+  }
+  header {
+    margin-bottom: 100px;
+  }
+  h1 {
+    font-weight: 100;
+    color: #fff;
+    font-size:30px;
+    text-indent: 500px;
+
+  }
+
+  .barra {
+  background-color: #B39DDB;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  text-indent: 50px;
+  font-weight: 100px;
+  font-family:Verdana;
+  size: 10;
+}
+
+.c3-axis-y text {
+   fill: gray;
+   font-size:12px;
+}
+.c3-axis-x text {
+    font-size:12px;
+    fill:gray;
+}
+.c3 .c3-axis-y path, .c3 .c3-axis-y line {
+stroke: gray;
+}
+
+.c3 .c3-axis-x path, .c3 .c3-axis-x line {
+stroke: gray;
+}
+
+.c3-legend-item {
+  fill: gray;
+
+}
+
+  </style>
+</head>
+<body>
+
+<header>
+  <h1 style=" margin-top: 3em">Dados do Arduino</h1>
+</header>
+
+<div id="chart">
+  <div id="piezo"></div>
+</div>
+
+<script src="//cdn.pubnub.com/pubnub-3.10.2.js"></script>
+<script src="//pubnub.github.io/eon/v/eon/0.0.9/eon.js"></script>
+<script>
+var pubnub = PUBNUB.init({
+    publish_key: 'pub-c-25aca95c-c423-422c-bceb-86662801ea3e',
+    subscribe_key: 'sub-c-503200de-e79f-11e8-8495-720743810c32'
+});
+var channel = 'sensor';
+eon.chart({
+  channel: channel,
+  generate: {
+    bindto: '#piezo',
+    data: {
+      type: 'line',
+      colors: {
+        sensor: '#B39DDB'
+      }
+    },
+    axis: {
+      x: {
+        type: 'timeseries',
+        tick: {
+          format: '%H:%m:%S',
+          fit: true
+        },
+        label: {
+          text: 'Tempo',
+        }
+      },
+      y: {
+        label: {
+          text: 'RPM',
+          position: 'outer-middle'
+        },
+        tick: {
+          format: function (d) {
+            var df = Number( d3.format('.2f')(d) );
+            return df;
+          }
+        }
+      }
+  }
+},
+//history:true,
+pubnub: pubnub,
+limit: 30,
+transform: function(m) {
+  return { eon: {
+      sensor: m.sensor
+    }}
+  }
+});
+</script>
+</body>
+</html>
